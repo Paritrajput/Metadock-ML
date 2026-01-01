@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+/* ✅ Enable class-based dark mode (Tailwind v4) */
+@custom-variant dark (&:where(.dark, .dark *));
+.clip-closed {
+  clip-path: circle(0% at 90% 40px);
+}
+
+.clip-open {
+  clip-path: circle(150% at 50% 50%);
+}

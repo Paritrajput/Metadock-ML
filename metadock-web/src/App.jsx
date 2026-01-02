@@ -25,7 +25,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/verify" element={<VerifyOTP />} />
-          <Route path="/analyze" element={<Dashboard />} />
+          <Route path="/dashboard/:userId" element={<Dashboard />} />
 
           <Route path="/status/:jobId" element={<JobStatus />} />
           <Route path="/results/:targetId" element={<Results />} />

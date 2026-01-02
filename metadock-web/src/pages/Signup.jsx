@@ -36,11 +36,14 @@ export default function Signup() {
       }
     );
 
-    const data = await response.json();
+ 
 
     if (response.ok) {
       console.log("OTP sent successfully");
+      const data = await response.json();
       console.log(data);
+      localStorage.setItem("email", email);
+
 
       router("/verify", { state: { email } });
     } else {

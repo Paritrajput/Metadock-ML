@@ -5,10 +5,36 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Login:", { email, password });
-  };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    const response =await fetch(`${import.meta.env.VITE_BASE_URL}/api/v1/users/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include", // Include cookies in the request
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert(data.message || "Login failed");
+      return;
+    }
+
+    console.log("Login successful", data);
+
+    alert("Login successful");
+
+    window.location.href = `/dashboard/${data.user.id}`;
+  } catch (error) {
+    console.error("Login error:", error);
+    alert("Something went wrong. Please try again.");
+  }
+};
 
   return (
     <div className="

@@ -1,15 +1,18 @@
 import { useEffect, useRef, useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 
 export default function VerifyOTP() {
   const [otp, setOtp] = useState(Array(6).fill(""));
   const [timeLeft, setTimeLeft] = useState(60);
   const inputsRef = useRef([]);
+  const email = localStorage.getItem("email") || "";
+
 
   // countdown timer
   useEffect(() => {
     if (timeLeft === 0) return;
-    const timer = setInterval(() => setTimeLeft(t => t - 1), 1000);
+    const timer = setInterval(() => setTimeLeft((t) => t - 1), 1000);
     return () => clearInterval(timer);
   }, [timeLeft]);
 
@@ -31,41 +34,92 @@ export default function VerifyOTP() {
     }
   };
 
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const code = otp.join("");
-    console.log("OTP Submitted:", code);
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/users/verify-otp`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, otp: otp.join("") }),
+        }
+      );
+     
+      if (response.ok) {
+        console.log("OTP verified successfully");
+         const data = await response.json();
+        console.log(data);
+        alert("OTP verified successfully. You can now log in.");
+        window.location.href = "/login";
+      } else {
+        console.error("Failed:", data.error);
+        alert(data.error || "OTP verification failed");
+      }
+    } catch (err) {
+      console.error("Error submitting OTP:", err);
+      alert("Error submitting OTP. Please try again.");
+    }
   };
 
-  const resendOTP = () => {
+  const resendOTP = async () => {
     setTimeLeft(60);
-    console.log("Resend OTP");
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/users/resend-otp`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        }
+      );
+      const data = await response.json();
+      if (response.ok) {
+        console.log("OTP resent successfully");
+        alert("OTP resent successfully. Please check your email.");
+      } else {
+        console.error("Failed to resend OTP:", data.error);
+        alert(data.error || "Failed to resend OTP");
+      }
+    } catch (err) {
+      console.error("Error resending OTP:", err);
+      alert("Error resending OTP. Please try again.");
+    }
   };
 
   return (
-    <div className="
+    <div
+      className="
       relative min-h-screen flex items-center justify-center overflow-hidden
       bg-[#f7f8fb] dark:bg-[#06070b]
-    ">
-
+    "
+    >
       {/* BACKGROUND GLOW */}
-      <div className="
+      <div
+        className="
         pointer-events-none absolute -top-40 left-1/2 h-[520px] w-[520px]
         -translate-x-1/2 rounded-full
         bg-gradient-to-r from-indigo-500/30 via-sky-500/30 to-cyan-400/30
         blur-3xl
-      " />
+      "
+      />
 
       {/* CARD */}
-      <div className="
+      <div
+        className="
         relative z-10 w-full max-w-md
         rounded-2xl
         border border-slate-200/60 dark:border-slate-800/60
         bg-white/70 dark:bg-white/5
         backdrop-blur-xl
         p-8 shadow-xl
-      ">
-
+      "
+      >
         {/* HEADER */}
         <div className="mb-8 text-center">
           <h2 className="text-3xl font-semibold text-slate-900 dark:text-slate-50">
@@ -140,9 +194,6 @@ export default function VerifyOTP() {
           </Link>
         </p>
       </div>
-    
     </div>
-
-
   );
 }

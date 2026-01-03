@@ -9,6 +9,7 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // entrance animation trigger
@@ -17,68 +18,72 @@ export default function Signup() {
   const router = useNavigate();
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
+    setLoading(true);
 
-  if (password !== confirmPassword) {
-    alert("Passwords do not match");
-    return;
-  }
-
-  try {
-    const response = await fetch(
-      "http://localhost:3000/api/v1/users/register",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name, email, password }),
-      }
-    );
-
- 
-
-    if (response.ok) {
-      console.log("OTP sent successfully");
-      const data = await response.json();
-      console.log(data);
-      localStorage.setItem("email", email);
-
-
-      router("/verify", { state: { email } });
-    } else {
-      console.error("Failed:", data.message);
-      alert(data.message || "Signup failed");
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      setLoading(false);
+      return;
     }
 
-  } catch (error) {
-    console.error("Error sending OTP:", error);
-    alert("Server error. Please try again.");
-  }
-};
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/api/v1/users/register`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name, email, password }),
+        }
+      );
 
+      if (response.ok) {
+        console.log("OTP sent successfully");
+        const data = await response.json();
+        console.log(data);
+        localStorage.setItem("email", email);
+
+        router("/verify", { state: { email } });
+      } else {
+        console.error("Failed:", data.message);
+        alert(data.message || "Signup failed");
+      }
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+      alert("Server error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="
+    <div
+      className="
       relative min-h-screen flex items-center justify-center overflow-hidden
       bg-[#f7f8fb] dark:bg-[#06070b]
       transition-colors
-    ">
-
+    "
+    >
       {/* BACKGROUND GLOW */}
-      <div className="
+      <div
+        className="
         pointer-events-none absolute -top-40 left-1/2 h-[520px] w-[520px]
         -translate-x-1/2 rounded-full
         bg-gradient-to-r from-indigo-500/30 via-sky-500/30 to-cyan-400/30
         blur-3xl
-      " />
+      "
+      />
 
       {/* SOFT NOISE / DEPTH */}
-      <div className="
+      <div
+        className="
         pointer-events-none absolute inset-0
         bg-[radial-gradient(circle_at_top,rgba(0,0,0,0.04),transparent_60%)]
         dark:bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.04),transparent_60%)]
-      " />
+      "
+      />
 
       {/* CARD */}
       <div
@@ -93,25 +98,25 @@ export default function Signup() {
           ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}
         `}
       >
-
         {/* HEADER */}
         <div className="mb-8 text-center">
-          <h2 className="
+          <h2
+            className="
             text-3xl font-semibold tracking-tight
             text-slate-900 dark:text-slate-50
-          ">
+          "
+          >
             Create your account
           </h2>
           <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
             Join{" "}
-            <span className="font-medium text-indigo-500">MetaDock-ML</span>{" "}
-            and start exploring molecular intelligence
+            <span className="font-medium text-indigo-500">MetaDock-ML</span> and
+            start exploring molecular intelligence
           </p>
         </div>
 
         {/* FORM */}
         <form onSubmit={handleSubmit} className="space-y-5">
-
           {/* NAME */}
           <div>
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
@@ -207,6 +212,7 @@ export default function Signup() {
           {/* BUTTON */}
           <button
             type="submit"
+            disabled={loading}
             className="
               w-full rounded-md py-3 font-medium text-white
               bg-gradient-to-br from-indigo-500 via-blue-600 to-cyan-500
@@ -214,9 +220,10 @@ export default function Signup() {
               transition-all duration-300
               hover:scale-[1.02]
               active:scale-[0.98]
+              disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100
             "
           >
-            Create account
+            {loading ? "Creating account..." : "Create account"}
           </button>
         </form>
 
@@ -231,7 +238,6 @@ export default function Signup() {
           </Link>
         </p>
       </div>
-   
     </div>
   );
 }

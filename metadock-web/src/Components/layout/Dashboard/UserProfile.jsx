@@ -2,6 +2,7 @@ import React, { use, useEffect, useState } from "react";
 
 function UserProfile() {
   const [userInfo, setUserInfo] = useState(null);
+  const [loadingLogout, setLoadingLogout] = useState(false);
   useEffect(() => {
     const getUserInfo = async () => {
       try {
@@ -16,8 +17,6 @@ function UserProfile() {
         if (!response.ok) {
           window.location.href = "/login";
           throw new Error("Failed to fetch user info");
-          
-
         }
         const data = await response.json();
         console.log(data);
@@ -32,11 +31,16 @@ function UserProfile() {
   }, []);
 
   const logout = async () => {
-    await fetch(`${import.meta.env.VITE_BASE_URL}/api/v1/users/logout`, {
-      method: "POST",
-      credentials: "include",
-    });
-    window.location.href = "/login";
+    setLoadingLogout(true);
+    try {
+      await fetch(`${import.meta.env.VITE_BASE_URL}/api/v1/users/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } finally {
+      setLoadingLogout(false);
+      window.location.href = "/login";
+    }
   };
 
   return (
@@ -55,14 +59,15 @@ function UserProfile() {
         <div
           className="
           h-12 w-12 rounded-full
-          bg-gradient-to-br from-indigo-500 via-sky-500 to-cyan-400
+          bg-linear-to-br from-indigo-500 via-sky-500 to-cyan-400
           flex items-center justify-center
           text-white font-semibold
         "
         >
           {userInfo
             ? userInfo.name
-                .split(" ").map((n) => n[0])
+                .split(" ")
+                .map((n) => n[0])
                 .join("")
                 .toUpperCase()
             : "U"}
@@ -91,6 +96,7 @@ function UserProfile() {
       {/* RIGHT: SETTINGS */}
       <button
         onClick={logout}
+        disabled={loadingLogout}
         className="
           rounded-md px-4 py-2 text-sm font-medium
           text-slate-700 dark:text-slate-200
@@ -98,9 +104,10 @@ function UserProfile() {
           border border-slate-300/60 dark:border-slate-700/60
           transition-all duration-300
           hover:bg-white/80 dark:hover:bg-white/10
+          disabled:opacity-70 disabled:cursor-not-allowed
         "
       >
-        LogOut
+        {loadingLogout ? "Logging out..." : "LogOut"}
       </button>
     </div>
   );

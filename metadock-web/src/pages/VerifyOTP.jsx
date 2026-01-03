@@ -7,7 +7,8 @@ export default function VerifyOTP() {
   const [timeLeft, setTimeLeft] = useState(60);
   const inputsRef = useRef([]);
   const email = localStorage.getItem("email") || "";
-
+  const [loading, setLoading] = useState(false);
+  const [loadingResend, setLoadingResend] = useState(false);
 
   // countdown timer
   useEffect(() => {
@@ -34,9 +35,9 @@ export default function VerifyOTP() {
     }
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL}/api/v1/users/verify-otp`,
@@ -48,10 +49,10 @@ export default function VerifyOTP() {
           body: JSON.stringify({ email, otp: otp.join("") }),
         }
       );
-     
+
       if (response.ok) {
         console.log("OTP verified successfully");
-         const data = await response.json();
+        const data = await response.json();
         console.log(data);
         alert("OTP verified successfully. You can now log in.");
         window.location.href = "/login";
@@ -62,10 +63,13 @@ export default function VerifyOTP() {
     } catch (err) {
       console.error("Error submitting OTP:", err);
       alert("Error submitting OTP. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   const resendOTP = async () => {
+    setLoadingResend(true);
     setTimeLeft(60);
     try {
       const response = await fetch(
@@ -89,6 +93,8 @@ export default function VerifyOTP() {
     } catch (err) {
       console.error("Error resending OTP:", err);
       alert("Error resending OTP. Please try again.");
+    } finally {
+      setLoadingResend(false);
     }
   };
 
@@ -159,6 +165,7 @@ export default function VerifyOTP() {
           {/* VERIFY BUTTON */}
           <button
             type="submit"
+            disabled={loading}
             className="
               w-full rounded-md py-3 font-medium text-white
               bg-gradient-to-br from-indigo-500 via-blue-600 to-cyan-500
@@ -166,9 +173,10 @@ export default function VerifyOTP() {
               transition-all duration-300
               hover:scale-[1.02]
               active:scale-[0.98]
+              disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100
             "
           >
-            Verify OTP
+            {loading ? "Verifying..." : "Verify OTP"}
           </button>
         </form>
 
@@ -179,9 +187,10 @@ export default function VerifyOTP() {
           ) : (
             <button
               onClick={resendOTP}
-              className="font-medium text-indigo-500 hover:text-indigo-400"
+              disabled={loadingResend}
+              className="font-medium text-indigo-500 hover:text-indigo-400 disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              Resend OTP
+              {loadingResend ? "Resending..." : "Resend OTP"}
             </button>
           )}
         </div>

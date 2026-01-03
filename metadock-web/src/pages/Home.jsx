@@ -7,7 +7,7 @@ export default function Home() {
     <div className="bg-[#f7f8fb] dark:bg-[#06070b00] ">
       {/* ================= HERO ================= */}
       <div className="h-full w-full overflow-hidden fixed top-0 left-0 z-10">
-      <iframe className="rotate-45 absolute top-0 left-0 opacity-30" src="https://my.spline.design/spiraldna-5NzgnrbNTp1VYnnXjg05sji0/" frameborder="0" width="100%" height="100%"></iframe>
+      <iframe className="rotate-35 absolute top-0 left-0 opacity-30 scale-150" src="https://my.spline.design/spiraldna-5NzgnrbNTp1VYnnXjg05sji0/" frameborder="0" width="100%" height="100%"></iframe>
       </div>
 
       <section className="
@@ -43,6 +43,7 @@ export default function Home() {
         " />
 
         {/* CONTENT */}
+        <div className="relative w-full dark:bg-black/45 z-20">
         <div className="
           relative z-10 mx-auto flex min-h-screen max-w-6xl
           flex-col items-center justify-center px-6 text-center
@@ -102,12 +103,16 @@ export default function Home() {
             Start Analysis
           </Link>
         </div>
+        </div>
 
       </section>
                   {/* ================= FEATURES ================= */}
+      <div className="w-full relative z-50 dark:bg-black/55 z-30">
       <div className="relative z-10 mx-auto max-w-6xl px-6 md:px-6 py-24 rounded-4xl z-40" > 
       <Features />
       </div> 
+      </div>
+      
 
   
     </div>

@@ -1,10 +1,13 @@
 import { Link, useLocation } from "react-router-dom";
 import { useTheme } from "../../context/ThemeContext";
 import { useEffect, useRef, useState } from "react";
+import { useAuth } from "../../context/UserContext";
 
 export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
+  const {user, loading} = useAuth();
+  console.log("Navbar User:", user);
 
   const [open, setOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
@@ -12,7 +15,7 @@ export default function Navbar() {
 
   const links = [
     { name: "Home", path: "/" },
-    { name: "Features", path: "/analyze" },
+    { name: "Features", path: "/dashboard" },
     { name: "Contact", path: "/contact-us" },
   ];
 
@@ -42,9 +45,9 @@ export default function Navbar() {
     <>
       {/* ================= NAVBAR ================= */}
       <header
-        className={`
-          fixed top-5 left-1/2 z-50
-          w-[calc(100%-2rem)] md:w-[calc(100%-5rem)]
+        className={` md:p-0
+          fixed top-4 left-1/2 z-100
+          w-[calc(100%-2rem)] md:w-[calc(100%-15rem)] lg:w-[calc(100%-30rem)]
           -translate-x-1/2
           rounded-full
           border border-slate-200/60 dark:border-slate-800/60
@@ -117,7 +120,25 @@ export default function Navbar() {
               {theme === "light" ? "🌙" : "☀️"}
             </button>
 
-            {/* CTA (DESKTOP) */}
+          {user ? (
+            <Link
+              to={`/dashboard/${user._id}` }
+             className="
+          h-12 w-12 rounded-full
+          bg-linear-to-br from-indigo-500 via-sky-500 to-cyan-400
+          flex items-center justify-center
+          text-white font-semibold
+        "
+        >
+          {user
+            ? user.name
+                .split(" ").map((n) => n[0])
+                .join("")
+                .toUpperCase()
+            : "U"}
+            </Link>
+          ) : (
+
             <Link
               to="/login"
               className="
@@ -131,6 +152,7 @@ export default function Navbar() {
             >
               Get In
             </Link>
+          )}
 
             {/* HAMBURGER (MOBILE) */}
             <button

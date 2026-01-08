@@ -1,13 +1,13 @@
 import { Link } from "react-router-dom";
 import Features from "../Components/layout/Home/Features";
-import gridBlob from "../assets/grid2.png";
+import gridBlob from "../assets/network2.png";
 
 export default function Home() {
   return (
     <div className="bg-[#f7f8fb] dark:bg-[#06070b00] ">
       {/* ================= HERO ================= */}
-      <div className="h-full w-full overflow-hidden fixed top-0 left-0 z-10">
-      <iframe className="rotate-35 absolute top-0 left-0 opacity-30 scale-150" src="https://my.spline.design/spiraldna-5NzgnrbNTp1VYnnXjg05sji0/" frameborder="0" width="100%" height="100%"></iframe>
+      <div className="h-full w-full overflow-hidden fixed top-0 left-0 z-20">
+      <iframe className="rotate-35 absolute top-0 left-0 opacity-50 scale-150" src="https://my.spline.design/spiraldna-5NzgnrbNTp1VYnnXjg05sji0/" frameborder="0" width="100%" height="100%"></iframe>
       </div>
 
       <section className="
@@ -24,7 +24,7 @@ export default function Home() {
             left-1/2 top-1/2
             -translate-x-1/2 -translate-y-1/2
             w-[900px] max-w-none
-            opacity-20 dark:opacity-30 z-0 
+            opacity-20 dark:opacity-30 z-0
           "
         />
 

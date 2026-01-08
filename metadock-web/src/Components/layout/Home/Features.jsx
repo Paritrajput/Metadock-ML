@@ -32,7 +32,9 @@ export default function Features() {
         relative overflow-hidden
         bg-[#f7f8fb] dark:bg-[#06070b]
         transition-colors rounded-4xl border border-slate-200/60 dark:border-slate-800/60
-        bg-white/70 dark:bg-white/5  z-30 relative
+        bg-white/70 dark:bg-white/5  z-30 relative transition-all duration-300
+                
+                hover:shadow-xl hover:shadow-cyan-500/10
       "
     >
       <div className="max-w-7xl mx-auto px-6 py-24 space-y-16">

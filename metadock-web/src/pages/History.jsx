@@ -78,9 +78,9 @@ export default function History() {
               text-sm
             "
           >
-            <option>All statuses</option>
-            <option>Completed</option>
-            <option>Running</option>
+            <option className="bg-white/80 dark:bg-black/80">All statuses</option>
+            <option className="bg-white/80 dark:bg-black/80">Completed</option>
+            <option className="bg-white/80 dark:bg-black/80">Running</option>
           </select>
         </div>
 

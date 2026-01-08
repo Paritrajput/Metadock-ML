@@ -1,25 +1,34 @@
 import { Link, useLocation } from "react-router-dom";
 import { useTheme } from "../../context/ThemeContext";
-import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../context/UserContext";
+import { useEffect, useRef, useState } from "react";
+
+import {
+  FiHome,
+  FiGrid,
+  FiMail,
+  FiLogIn,
+  FiLogOut,
+  FiMenu,
+  FiX,
+} from "react-icons/fi";
 
 export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
+  const { user } = useAuth();
   const location = useLocation();
-  const {user, loading} = useAuth();
-  console.log("Navbar User:", user);
 
   const [open, setOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
   const lastScrollY = useRef(0);
 
   const links = [
-    { name: "Home", path: "/" },
-    { name: "Features", path: "/dashboard" },
-    { name: "Contact", path: "/contact-us" },
+    { name: "Home", path: "/", icon: <FiHome /> },
+    { name: "Dashboard", path: user? `/dashboard/${user._id}`:"/login", icon: <FiGrid /> },
+    { name: "Contact", path: "/contact-us", icon: <FiMail /> },
   ];
 
-  /* ================= SCROLL HIDE ================= */
+  /* ================= SCROLL HIDE (DESKTOP) ================= */
   useEffect(() => {
     const onScroll = () => {
       if (open) return;
@@ -36,35 +45,31 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, [open]);
 
-  /* ================= LOCK SCROLL ================= */
+
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "auto";
   }, [open]);
 
   return (
     <>
-      {/* ================= NAVBAR ================= */}
+      {/* DESKTOP / TOP NAV */}
       <header
-        className={` md:p-0
-          fixed top-4 left-1/2 z-100
+        className={`
+          fixed top-4 left-1/2 z-[90]
           w-[calc(100%-2rem)] md:w-[calc(100%-15rem)] lg:w-[calc(100%-30rem)]
           -translate-x-1/2
           rounded-full
           border border-slate-200/60 dark:border-slate-800/60
           bg-white/70 dark:bg-[#06070b]/70
           backdrop-blur-xl
-          transition-all duration-500
+          transition-all duration-500 md:p-2
           ${hidden ? "-translate-y-32" : "translate-y-0"}
         `}
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
+        <div className="flex items-center justify-between px-6 py-3">
 
           {/* LOGO */}
-          <Link
-            to="/"
-            onClick={() => setOpen(false)}
-            className="text-xl font-semibold tracking-tight text-slate-900 dark:text-slate-50"
-          >
+          <Link to="/" className="text-xl font-semibold text-slate-900 dark:text-white">
             MetaDock
             <span className="ml-1 bg-gradient-to-r from-indigo-500 via-sky-500 to-cyan-400 bg-clip-text text-transparent">
               ML
@@ -79,20 +84,18 @@ export default function Navbar() {
                 <li key={l.path} className="relative group">
                   <Link
                     to={l.path}
-                    className={`
-                      text-sm font-medium transition-colors
-                      ${active
+                    className={`text-sm font-medium transition-colors ${
+                      active
                         ? "text-indigo-500"
-                        : "text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"}
-                    `}
+                        : "text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+                    }`}
                   >
                     {l.name}
                     <span
                       className={`
                         absolute -bottom-1 left-0 h-[2px] w-full
                         bg-gradient-to-r from-indigo-500 to-cyan-400
-                        transition-transform duration-300
-                        origin-left
+                        transition-transform origin-left
                         ${active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"}
                       `}
                     />
@@ -104,133 +107,160 @@ export default function Navbar() {
 
           {/* ACTIONS */}
           <div className="flex items-center gap-3">
-            {/* THEME TOGGLE */}
+   <button
+  onClick={toggleTheme}
+  aria-label="Toggle theme"
+  className="
+    group relative h-9 w-9
+    rounded-full
+    border border-slate-300/60 dark:border-slate-700/60
+    bg-white/70 dark:bg-white/5
+    backdrop-blur-md
+    transition-all duration-500
+    hover:scale-110
+    active:scale-95
+  "
+>
+  {/* GLOW */}
+  <span
+    className="
+      absolute inset-0 rounded-full
+      bg-gradient-to-br from-indigo-500/40 via-sky-500/40 to-cyan-400/40
+      opacity-0 blur-md
+      transition-opacity duration-500
+      group-hover:opacity-100
+    "
+  />
+
+  {/* ICON */}
+  <span
+    className={`
+      relative z-10 flex items-center justify-center
+      text-lg
+      transition-transform duration-700
+      ${theme === "light" ? "rotate-0" : "rotate-180"}
+    `}
+  >
+    {theme === "light" ? "🌙" : "☀️"}
+  </span>
+</button>
+
+
+            {user ? (
+              <Link
+                to={`/dashboard/${user._id}`}
+                className="hidden md:flex h-10 w-10 rounded-full
+                bg-gradient-to-br from-indigo-500 via-sky-500 to-cyan-400
+                items-center justify-center text-white font-semibold"
+              >
+                {user.name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")
+                  .toUpperCase()}
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className="hidden md:inline-block px-5 py-2 text-sm text-white rounded-md
+                bg-gradient-to-br from-indigo-500 via-blue-600 to-cyan-500"
+              >
+                Get In
+              </Link>
+            )}
+
+            {/* MOBILE MENU BUTTON */}
             <button
-              onClick={toggleTheme}
-              className="
-                flex h-9 w-9 items-center justify-center
-                rounded-full
-                border border-slate-300/60 dark:border-slate-700/60
-                bg-white/60 dark:bg-white/5
-                text-slate-700 dark:text-slate-200
-                transition-all duration-300
-                hover:scale-105
-              "
+              onClick={() => setOpen(true)}
+              className="md:hidden text-2xl text-slate-800 dark:text-white"
             >
-              {theme === "light" ? "🌙" : "☀️"}
-            </button>
-
-          {user ? (
-            <Link
-              to={`/dashboard/${user._id}` }
-             className="
-          h-12 w-12 rounded-full
-          bg-linear-to-br from-indigo-500 via-sky-500 to-cyan-400
-          flex items-center justify-center
-          text-white font-semibold
-        "
-        >
-          {user
-            ? user.name
-                .split(" ").map((n) => n[0])
-                .join("")
-                .toUpperCase()
-            : "U"}
-            </Link>
-          ) : (
-
-            <Link
-              to="/login"
-              className="
-                hidden md:inline-block
-                rounded-md px-5 py-2 text-sm font-medium text-white
-                bg-gradient-to-br from-indigo-500 via-blue-600 to-cyan-500
-                shadow-lg shadow-cyan-500/20
-                transition-all duration-300
-                hover:scale-[1.04]
-              "
-            >
-              Get In
-            </Link>
-          )}
-
-            {/* HAMBURGER (MOBILE) */}
-            <button
-              onClick={() => setOpen((prev) => !prev)}
-              className="md:hidden flex flex-col gap-1.5"
-            >
-              <span
-                className={`h-[2px] w-6 bg-slate-900 dark:bg-white transition ${
-                  open ? "rotate-45 translate-y-[6px]" : ""
-                }`}
-              />
-              <span
-                className={`h-[2px] w-6 bg-slate-900 dark:bg-white transition ${
-                  open ? "opacity-0" : ""
-                }`}
-              />
-              <span
-                className={`h-[2px] w-6 bg-slate-900 dark:bg-white transition ${
-                  open ? "-rotate-45 -translate-y-[6px]" : ""
-                }`}
-              />
+              <FiMenu />
             </button>
           </div>
         </div>
       </header>
 
-      {/* ================= FULLSCREEN WATER MENU ================= */}
+      {/* ================= FULLSCREEN SLIDE MOBILE MENU ================= */}
       <div
         className={`
           fixed inset-0 z-[100]
-          bg-white/85 dark:bg-[#06070b]/90
-          backdrop-blur-xl
-
-          transition-[clip-path,opacity] duration-700
-          ease-[cubic-bezier(.4,0,.2,1)]
-
-          ${open
-            ? "clip-open opacity-100 pointer-events-auto"
-            : "clip-closed opacity-0 pointer-events-none"}
+          bg-white dark:bg-[#06070b]
+          transition-transform duration-500 ease-in-out
+          ${open ? "translate-x-0" : "translate-x-full"}
         `}
       >
-        <div className="flex h-full flex-col items-center justify-center gap-10 text-center">
+        {/* HEADER */}
+        <div className="flex items-center justify-between px-6 py-5 border-b dark:border-slate-800">
+          <span className="text-xl font-semibold text-slate-900 dark:text-white">
+            MetaDock<span className="text-indigo-500">ML</span>
+          </span>
+          <button onClick={() => setOpen(false)} className="text-2xl">
+            <FiX />
+          </button>
+        </div>
+
+        {/* MENU */}
+        <div className="flex flex-col px-6 py-8 gap-6">
           {links.map((l) => (
             <Link
               key={l.path}
               to={l.path}
               onClick={() => setOpen(false)}
               className={`
-                text-3xl font-semibold transition-colors
+                flex items-center gap-4 text-lg font-medium
                 ${
                   location.pathname === l.path
                     ? "text-indigo-500"
-                    : "text-slate-900 dark:text-white hover:text-indigo-400"
+                    : "text-slate-800 dark:text-slate-200"
                 }
               `}
             >
+              <span className="text-xl">{l.icon}</span>
               {l.name}
             </Link>
           ))}
+        </div>
 
-          <Link
-            to="/login"
-            onClick={() => setOpen(false)}
-            className="
-              mt-6 rounded-md px-8 py-3
-              text-white font-medium
-              bg-gradient-to-br from-indigo-500 via-blue-600 to-cyan-500
-            "
-          >
-            Get In
-          </Link>
+        {/* USER SECTION */}
+        <div className="mt-auto px-6 py-8 border-t dark:border-slate-800">
+          {user ? (
+            <>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="h-12 w-12 rounded-full
+                  bg-gradient-to-br from-indigo-500 via-sky-500 to-cyan-400
+                  flex items-center justify-center text-white font-semibold">
+                  {user.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")
+                    .toUpperCase()}
+                </div>
+                <div>
+                  <p className="font-medium text-slate-900 dark:text-white">
+                    {user.name}
+                  </p>
+                  <p className="text-sm text-slate-500">{user.email}</p>
+                </div>
+              </div>
 
-          <button
-            onClick={() => setOpen(false)}
-            className="mt-8 text-sm text-slate-500"
-          >
-            Close ✕
-          </button>
+              <Link
+                to="/logout"
+                className="flex items-center gap-3 text-red-500"
+              >
+                <FiLogOut />
+                Log out
+              </Link>
+            </>
+          ) : (
+            <Link
+              to="/login"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-3 text-indigo-500 font-medium"
+            >
+              <FiLogIn />
+              Login
+            </Link>
+          )}
         </div>
       </div>
     </>

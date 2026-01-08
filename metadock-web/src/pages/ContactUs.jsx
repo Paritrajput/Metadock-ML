@@ -50,7 +50,7 @@ export default function Contact() {
       className="
         relative min-h-screen overflow-hidden
         bg-[#f7f8fb] dark:bg-[#06070b]
-        transition-colors
+        transition-colors pt-10
       "
     >
       {/* BACKGROUND GLOW */}
